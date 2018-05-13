@@ -1,0 +1,33 @@
+{
+  "name": "github-diary",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "author": "cdaringe <cdaringe@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.10",
+    "meow": "^5.0.0",
+    "nanographql": "^2.0.0",
+    "node-fetch": "^2.1.2",
+    "toiletdb": "^1.4.1"
+  },
+  "scripts": {
+    "format": "prettier-standard 'src/**/*.js'",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "linters": {
+      "src/**/*.js": [
+        "prettier-standard",
+        "git add"
+      ]
+    }
+  },
+  "repository": "git@github.com:cdaringe/github-diary.git",
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^7.1.0",
+    "prettier-standard": "^8.0.1",
+    "standard": "^11.0.1"
+  }
+}
