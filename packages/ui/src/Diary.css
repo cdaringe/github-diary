@@ -1,0 +1,7 @@
+.diary {
+  border-radius: 10px;
+  border: lightgray 1px solid;
+  margin: auto;
+  padding: 20px;
+  max-width: 600px;
+}

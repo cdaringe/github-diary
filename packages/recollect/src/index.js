@@ -19,7 +19,9 @@ var diary = {
     var config = opts || {}
     config.endpoint = config.endpoint || 'https://api.github.com/graphql'
     assert(config.token, 'GitHub token required')
+    assert(config.login, 'GitHub login (user) required')
     await db.open()
+    await db.write('login', config.login)
     this.updateDiary({ config })
   },
   async updateDiary ({ config }) {
