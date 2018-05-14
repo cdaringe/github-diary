@@ -10,7 +10,6 @@ const STORAGE_PREFIX = '__filename__'
 
 const theme = {
   scheme: 'monokai',
-  author: 'wimer hazenberg (http://www.monokai.nl)',
   base00: '#272822',
   base01: '#383830',
   base02: '#49483e',
@@ -66,8 +65,11 @@ class App extends Component {
     return (
       <div className='App'>
         <header className='App-header'>
-          <img src={logo} className='App-logo' alt='logo' />
           <h1 className='App-title'>GitHub Diary</h1>
+          <div className='logo_container'>
+            <div className='logo_bg' />
+            <img src={logo} className='App-logo' alt='logo' />
+          </div>
         </header>
         <MagicDropzone id='dropzone' accept='.json' onDrop={this.onDrop}>
           <div>Click or drag diary.json file here!</div>

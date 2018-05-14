@@ -1,8 +1,24 @@
 .App-logo {
-  animation: App-logo-spin infinite 20s linear;
+  /* animation: App-logo-spin infinite 60s linear; */
+  transform: rotate(-33deg);
+  transition: all 700ms;
   height: 80px;
 }
-
+.App-logo:hover {
+  /* animation: App-logo-spin infinite 60s linear; */
+  transform: rotate(15deg);
+}
+.logo_container {
+  position: relative;
+  display: inline-block;
+  transform: translate(30px, 30px);
+}
+.logo_bg {
+  position: absolute;
+  border-radius: 80px;
+  border: 48px white solid;
+  transform: translate(-15px, -6px);
+}
 .App-header {
   background-color: #222;
   height: 150px;
@@ -11,6 +27,7 @@
 }
 
 .App-title {
+  display: inline-block;
   font-size: 1.5em;
 }
 
