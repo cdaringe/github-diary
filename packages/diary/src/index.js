@@ -3,6 +3,7 @@ var query = require('./query')
 var assert = require('assert')
 var db = require('./db')
 var keyBy = require('lodash/keyBy')
+var gh = require('./gh')
 
 var diary = {
   async getLatestCursorTokens () {
@@ -18,8 +19,8 @@ var diary = {
   async main (opts) {
     var config = opts || {}
     config.endpoint = config.endpoint || 'https://api.github.com/graphql'
-    assert(config.token, 'GitHub token required')
     assert(config.login, 'GitHub login (user) required')
+    config.token = config.token || (await gh.getToken())
     await db.open()
     await db.write('login', config.login)
     this.updateDiary({ config })
@@ -40,7 +41,7 @@ var diary = {
     if (hasMoreComments || hasMorePullRequests) {
       --i
       if (!i) return
-      console.info(`[diary] info: requesting additionaly diary data`)
+      console.info(`[diary] info: requesting additionally diary data`)
       var body = query.history({
         login: config.login,
         includeComments: hasMoreComments,
@@ -68,6 +69,9 @@ var diary = {
       if (json.errors) {
         throw new Error(json.errors.map(e => toString(e)).join(', '))
       }
+      if (res.status >= 400) {
+        throw new Error(`[${res.status}: ${res.statusText}] ${json.message || JSON.stringify(json)}`)
+      }
       this.appendDiary(json)
       // sleep to not piss off github :)
       await new Promise(resolve => setTimeout(resolve, 1000))
@@ -77,10 +81,9 @@ var diary = {
     }
   },
   async appendDiary (res) {
-    const {
-      issueComments: { pageInfo: issueCommentsPageInfo, nodes: issueComments },
-      pullRequests: { pageInfo: pullRequestsPageInfo, nodes: pullRequests }
-    } = res.data.user
+    var { issueComments: ic, pullRequests: pr } = res.data.user
+    var { pageInfo: issueCommentsPageInfo, nodes: issueComments } = ic || {}
+    var { pageInfo: pullRequestsPageInfo, nodes: pullRequests } = pr || {}
     var prsById = keyBy(pullRequests, 'id')
     var comsById = keyBy(issueComments, 'id')
     var [inDbComsById = {}, inDbPrsById = {}] = await Promise.all([

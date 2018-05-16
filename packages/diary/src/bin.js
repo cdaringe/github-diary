@@ -3,15 +3,17 @@ var diary = require('../')
 var cli = meow(
   `
   Usage
-    $ diary <args>
+    $ github-diary <args>
 
   Options
     --login, -l GitHub login user
-    --token, -t  GitHub token
-    --endpoint, -e GitHub endpoint, defaults to GitHub.com's GQL API
+    --token, -t GitHub token. If none provided, one will generate one for you
+                on _each run_. It is strongly recommended to generate and use
+                your own token
+    --endpoint, -e GitHub endpoint. Defaults to GitHub.com
 
   Examples
-    $ diary --login cdaringe --token GITHUB_TOKEN
+    $ github-diary --login cdaringe [--token GITHUB_TOKEN]
 `,
   {
     flags: {
