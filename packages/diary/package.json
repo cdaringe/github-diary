@@ -42,5 +42,16 @@
   "bugs": {
     "url": "https://github.com/cdaringe/github-diary/issues"
   },
-  "homepage": "https://github.com/cdaringe/github-diary#readme"
+  "homepage": "https://github.com/cdaringe/github-diary#readme",
+  "keywords": [
+    "github",
+    "diary",
+    "scorecard",
+    "stats",
+    "pull",
+    "requests",
+    "comments",
+    "collaboration",
+    "history"
+  ]
 }
