@@ -40,7 +40,6 @@ upload your `diary.json` to [diary.cdaringe.com](https://diary.cdaringe.com). **
 
 ```sh
 docker run -it \
-  --init \
   --rm \
   -v $PWD/output:/output \
   cdaringe/github-diary \
