@@ -15,7 +15,7 @@ reflect over your life on GitHub. generate a GitHub history json file and upload
 ## usage
 
 to generate your diary, run `github-diary` via one of the methods below, and
-upload your `diary.json` to [diary.cdaringe.com](https://diary.cdaringe.com). **no private data is captured/persisted**. you are welcome to run the ui manually via the [ui](https://github.com/cdaringe/github-diary/tree/master/packages/ui) project as well.
+upload your `diary.json` to [diary.cdaringe.com](https://diary.cdaringe.com). **no private data is captured/persisted on the site**. you are welcome to run the ui manually via the [ui](https://github.com/cdaringe/github-diary/tree/master/packages/ui) project as well.
 
 ```
   Usage
@@ -23,9 +23,9 @@ upload your `diary.json` to [diary.cdaringe.com](https://diary.cdaringe.com). **
 
   Options
     --login, -l GitHub login user
-    --token, -t GitHub token. If none provided, one will generate one for you
+    --token, -t GitHub token. If none provided, one will be generated for you
                 on _each run_. It is strongly recommended to generate and use
-                your own token
+                your own token in advance.  https://github.com/settings/tokens
     --endpoint, -e GitHub endpoint. Defaults to GitHub.com
 
   Examples
