@@ -11,9 +11,10 @@ var cli = meow(
                 on _each run_. It is strongly recommended to generate and use
                 your own token
     --endpoint, -e GitHub endpoint. Defaults to GitHub.com
+    --output, -o output file
 
   Examples
-    $ github-diary --login cdaringe [--token GITHUB_TOKEN]
+    $ github-diary --login cdaringe [--token GITHUB_TOKEN] [-o /path/to/diary.json]
 `,
   {
     flags: {
@@ -28,6 +29,10 @@ var cli = meow(
       endpoint: {
         type: 'string',
         alias: 'e'
+      },
+      output: {
+        type: 'string',
+        alias: 'o'
       }
     }
   }

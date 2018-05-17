@@ -13,8 +13,8 @@ var scripts = {
     cp.execSync(`docker build -t ${latestTag} -t ${currentTag} .`, { cwd: projectRoot, stdio: 'inherit' })
   },
   async publish () {
-    cp.execSync(`docker publish ${currentTag}`, { cwd: projectRoot, stdio: 'inherit' })
-    cp.execSync(`docker publish ${latestTag}`, { cwd: projectRoot, stdio: 'inherit' })
+    cp.execSync(`docker push ${currentTag}`, { cwd: projectRoot, stdio: 'inherit' })
+    cp.execSync(`docker push ${latestTag}`, { cwd: projectRoot, stdio: 'inherit' })
   }
 }
 

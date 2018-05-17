@@ -1,7 +1,7 @@
 {
   "name": "github-diary",
   "description": "reflect over your life on GitHub",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "main": "src/index.js",
   "author": "cdaringe <cdaringe@gmail.com>",
   "license": "MIT",
@@ -17,7 +17,7 @@
     "format": "prettier-standard 'src/**/*.js'",
     "precommit": "lint-staged",
     "build": "node ./scripts build",
-    "publish:docker": "node ./scripts build",
+    "publish:docker": "node ./scripts publish",
     "postpublish": "run-s build publish:docker"
   },
   "lint-staged": {

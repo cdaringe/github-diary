@@ -1,7 +1,5 @@
 var toilet = require('toiletdb')
 var path = require('path')
-var DB_FILENAME = path.resolve(process.cwd(), 'diary.json')
-var db = toilet(DB_FILENAME)
 var util = require('util')
 
 var KEYS = {
@@ -13,12 +11,16 @@ var CURSOR_PAGE_INFO_KEYS = {
   PULL_REQUESTS: `${KEYS.PULL_REQUESTS}pullRequestsPageInfo`
 }
 
-module.exports = {
-  open: util.promisify(db.open),
-  read: util.promisify(db.read),
-  write: util.promisify(db.write),
-  delete: util.promisify(db.delete),
-  CURSOR_PAGE_INFO_KEYS,
-  KEYS,
-  DB_FILENAME
+module.exports = function ({ filename }) {
+  filename = filename || path.resolve(process.cwd(), 'diary.json')
+  var db = toilet(filename)
+  return {
+    open: util.promisify(db.open),
+    read: util.promisify(db.read),
+    write: util.promisify(db.write),
+    delete: util.promisify(db.delete),
+    CURSOR_PAGE_INFO_KEYS,
+    KEYS,
+    filename
+  }
 }

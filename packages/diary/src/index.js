@@ -1,12 +1,12 @@
 var fetch = require('node-fetch')
 var query = require('./query')
 var assert = require('assert')
-var db = require('./db')
+var dbFactory = require('./db')
 var keyBy = require('lodash/keyBy')
 var gh = require('./gh')
 
 var diary = {
-  async getLatestCursorTokens () {
+  async getLatestCursorTokens (db) {
     var res = await Promise.all([
       db.read(db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS),
       db.read(db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS)
@@ -21,21 +21,18 @@ var diary = {
     config.endpoint = config.endpoint || 'https://api.github.com/graphql'
     assert(config.login, 'GitHub login (user) required')
     config.token = config.token || (await gh.getToken())
+    var db = dbFactory({ filename: config.output })
     await db.open()
     await db.write('login', config.login)
-    this.updateDiary({ config })
+    this.updateDiary({ config, db })
   },
-  async updateDiary ({ config }) {
-    var latestCursorTokens = await this.getLatestCursorTokens()
-    var hasMoreComments = latestCursorTokens[
-      db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS
-    ]
-      ? latestCursorTokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS].hasNextPage
+  async updateDiary ({ config, db }) {
+    var tokens = await this.getLatestCursorTokens(db)
+    var hasMoreComments = tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS]
+      ? tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS].hasNextPage
       : true
-    var hasMorePullRequests = latestCursorTokens[
-      db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS
-    ]
-      ? latestCursorTokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS].hasNextPage
+    var hasMorePullRequests = tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS]
+      ? tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS].hasNextPage
       : true
     var i = 5 // temp!
     if (hasMoreComments || hasMorePullRequests) {
@@ -45,17 +42,12 @@ var diary = {
       var body = query.history({
         login: config.login,
         includeComments: hasMoreComments,
-        includeCommentsEndCursor: latestCursorTokens[
-          db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS
-        ]
-          ? latestCursorTokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS]
-            .endCursor
+        includeCommentsEndCursor: tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS]
+          ? tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS].endCursor
           : null,
         includePullRequests: hasMorePullRequests,
-        includePullRequestsEndCursor: latestCursorTokens[
-          db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS
-        ]
-          ? latestCursorTokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS].endCursor
+        includePullRequestsEndCursor: tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS]
+          ? tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS].endCursor
           : null
       })
       var res = await fetch(config.endpoint, {
@@ -70,17 +62,20 @@ var diary = {
         throw new Error(json.errors.map(e => toString(e)).join(', '))
       }
       if (res.status >= 400) {
-        throw new Error(`[${res.status}: ${res.statusText}] ${json.message || JSON.stringify(json)}`)
+        throw new Error(
+          `[${res.status}: ${res.statusText}] ${json.message ||
+            JSON.stringify(json)}`
+        )
       }
-      this.appendDiary(json)
+      this.appendDiary({ res: json, db })
       // sleep to not piss off github :)
       await new Promise(resolve => setTimeout(resolve, 1000))
-      this.updateDiary({ config })
+      this.updateDiary({ config, db })
     } else {
       console.info(`[diary] info: no additional diary data to collect`)
     }
   },
-  async appendDiary (res) {
+  async appendDiary ({ db, res }) {
     var { issueComments: ic, pullRequests: pr } = res.data.user
     var { pageInfo: issueCommentsPageInfo, nodes: issueComments } = ic || {}
     var { pageInfo: pullRequestsPageInfo, nodes: pullRequests } = pr || {}
