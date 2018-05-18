@@ -41,8 +41,9 @@
 }
 
 #dropzone {
-  background: darkslategray;
+  background: #499a4c;
   border-radius: 3px;
+  box-shadow: #222 0 0 2px;
   color: white;
   cursor: alias;
   display: grid;
@@ -51,15 +52,29 @@
   grid-template-rows: auto;
   height: 100px;
   margin: 10px auto;
+  position: absolute;
+  right: 20px;
   text-align: center;
+  top: 30px;
   transition: background 300ms;
   width: 300px;
 }
 #dropzone:hover {
-  background: slategray;
+  background: rgb(79, 128, 85);
 }
 #dropzone > * {
   align-self: center;
-  justify-self: center;
   grid-area: dropzone;
+  justify-self: center;
+}
+
+#no_files {
+  background: rgb(250, 249, 249);
+  border-radius: 2px;
+  border: lightgray solid 1px;
+  height: 50px;
+  margin: 40px auto;
+  padding: 20px;
+  text-align: center;
+  width: 200px;
 }

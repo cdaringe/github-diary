@@ -26,6 +26,7 @@ export default class Diary extends React.PureComponent {
   toImg = async () => {
     // hack around download bug
     var map = {
+      margin: { wip: 0 },
       position: { wip: 'fixed' },
       top: { wip: 0 },
       background: { wip: 'white' },
@@ -65,8 +66,9 @@ export default class Diary extends React.PureComponent {
     var commentsByRepo = groupBy(issueComments, 'repository.nameWithOwner')
     var numUniqueRepoPrAgainst = Object.keys(prsByRepo).length
     var numUniqueRepoCommentAgainst = Object.keys(commentsByRepo).length
-    var numUniqueRepos = Object.keys(Object.assign(prsByRepo, commentsByRepo))
-      .length
+    var numUniqueRepos = Object.keys(
+      Object.assign({}, prsByRepo, commentsByRepo)
+    ).length
     var mostCommentedOn = Object.values(commentsByRepo)
       .sort((a, b) => {
         if (a.length < b.length) return 1
@@ -89,7 +91,6 @@ export default class Diary extends React.PureComponent {
         text: set[0].repository.nameWithOwner,
         value: set.length
       }))
-
     var statGroup1 = [
       { text: 'Number of comments', value: numComments },
       { text: 'Number of pull requests', value: numPrs },
