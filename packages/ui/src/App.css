@@ -72,9 +72,13 @@
   background: rgb(250, 249, 249);
   border-radius: 2px;
   border: lightgray solid 1px;
-  height: 50px;
+  height: 90px;
   margin: 40px auto;
   padding: 20px;
   text-align: center;
   width: 200px;
+}
+
+.small {
+  font-size: smaller;
 }

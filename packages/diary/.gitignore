@@ -1,4 +1,7 @@
 diary.json
 .vscode
 node_modules
+tokenbuild
+*.log
 token
+build

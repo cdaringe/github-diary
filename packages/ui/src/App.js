@@ -4,6 +4,7 @@ import './App.css'
 import MagicDropzone from 'react-magic-dropzone'
 import JSONTree from 'react-json-tree'
 import Diary from './Diary'
+import { Flare } from './Flare'
 const STORAGE_PREFIX = '__filename__'
 
 const theme = {
@@ -53,7 +54,7 @@ class App extends Component {
   onFilenameSelect = filename => this.setState({ filename })
 
   render () {
-    const { filename, filenames } = this.state
+    const { filename } = this.state
     const diary = filename
       ? JSON.parse(window.localStorage.getItem(`${STORAGE_PREFIX}${filename}`))
       : null
@@ -61,6 +62,7 @@ class App extends Component {
     if (process.env.NODE_ENV === 'development') showJsonTree = true
     return (
       <div className='App'>
+        <Flare />
         <header className='App-header'>
           <h1 className='App-title'>GitHub Diary</h1>
           <div className='logo_container'>
@@ -83,9 +85,19 @@ class App extends Component {
           </span>
         </MagicDropzone>
         {diary && <Diary diary={diary} />}
-        {filenames.length ? null : (
+        {!diary && (
           <div id='no_files'>
             <p>No files uploaded yet!</p>
+            <p className='small'>
+              Wondering how to use this? Check out{' '}
+              <a
+                target='_blank'
+                rel='noopener noreferrer'
+                href='https://www.npmjs.com/package/github-diary'
+              >
+                github-diary on npm
+              </a>
+            </p>
           </div>
         )}
         {showJsonTree && diary ? <JSONTree theme={theme} data={diary} /> : null}

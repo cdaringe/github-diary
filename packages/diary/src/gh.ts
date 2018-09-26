@@ -1,8 +1,10 @@
-var ghauthcb = require('ghauth')
-var util = require('util')
-var ghauth = util.promisify(ghauthcb)
-var SCOPES = ['repo', 'read:org', 'read:user']
-var gh = {
+import * as  util from 'util'
+const ghauthcb = require('ghauth')
+
+const ghauth = util.promisify(ghauthcb)
+
+const SCOPES = ['repo', 'read:org', 'read:user']
+export const gh = {
   scopes: SCOPES,
   async getToken () {
     var authData = await ghauth({
@@ -12,8 +14,6 @@ var gh = {
       note: 'GitHub Diary Token',
       userAgent: 'GitHub Diary'
     })
-    return authData.token
+    return authData.token as string
   }
 }
-
-module.exports = gh

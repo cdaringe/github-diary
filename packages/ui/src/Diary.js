@@ -7,12 +7,14 @@ import domtoimage from 'dom-to-image'
 function toTable (stats) {
   return (
     <table>
-      {stats.map(stat => (
-        <tr>
-          <td>{stat.text}</td>
-          <td>{stat.value}</td>
-        </tr>
-      ))}
+      <tbody>
+        {stats.map((stat, i) => (
+          <tr key={i}>
+            <td>{stat.text}</td>
+            <td>{stat.value}</td>
+          </tr>
+        ))}
+      </tbody>
     </table>
   )
 }
@@ -115,8 +117,12 @@ export default class Diary extends React.PureComponent {
           download
         </button>
         <h1>
-          GitHub Diary -{' '}
-          <a target='_blank' href={`https://github.com/${login}`}>
+          GitHub.com Diary -{' '}
+          <a
+            target='_blank'
+            rel='noopener noreferrer'
+            href={`https://github.com/${login}`}
+          >
             {login}
           </a>
         </h1>
@@ -127,7 +133,7 @@ export default class Diary extends React.PureComponent {
         {toTable(statGroupUnique)}
         <h2>Discussed most</h2>
         {toTable(mostCommentedOn)}
-        <h2>Patched most</h2>
+        <h2>Pull Requested most</h2>
         {toTable(mostPrOn)}
       </div>
     )

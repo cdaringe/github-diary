@@ -1,6 +1,14 @@
-var meow = require('meow')
-var diary = require('../')
-var cli = meow(
+import meow from 'meow'
+import { diary } from './diary'
+
+export type DiaryRunOpts = {
+  endpoint?: string
+  login?: string
+  output?: string
+  token?: string
+}
+
+const cli = meow(
   `
   Usage
     $ github-diary <args>
@@ -38,6 +46,5 @@ var cli = meow(
   }
 )
 
-diary.main(cli.flags)
-
+diary.main(cli.flags as DiaryRunOpts)
 // https://developer.github.com/v4/guides/forming-calls/#authenticating-with-graphql

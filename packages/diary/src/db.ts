@@ -1,6 +1,6 @@
+import * as path from 'path'
+import * as util from 'util'
 var toilet = require('toiletdb')
-var path = require('path')
-var util = require('util')
 
 var KEYS = {
   ISSUE_COMMENTS: 'issueComments',
@@ -11,7 +11,19 @@ var CURSOR_PAGE_INFO_KEYS = {
   PULL_REQUESTS: `${KEYS.PULL_REQUESTS}pullRequestsPageInfo`
 }
 
-module.exports = function ({ filename }) {
+export type Toilet = {
+  open: ToiletCall
+  read: ToiletCall
+  write: ToiletCall
+  delete: ToiletCall
+  CURSOR_PAGE_INFO_KEYS: typeof CURSOR_PAGE_INFO_KEYS
+  KEYS: typeof KEYS
+  filename: string
+}
+export type ToiletCall = (...args: any[]) => Promise<any>
+
+export const init = (opts: { filename?: string }) => {
+  let { filename } = opts
   filename = filename || path.resolve(process.cwd(), 'diary.json')
   var db = toilet(filename)
   return {
@@ -22,5 +34,5 @@ module.exports = function ({ filename }) {
     CURSOR_PAGE_INFO_KEYS,
     KEYS,
     filename
-  }
+  } as Toilet
 }

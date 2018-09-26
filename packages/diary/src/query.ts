@@ -1,6 +1,6 @@
-var gql = require('nanographql')
+import gql = require('nanographql')
 
-var history = gql`
+export const history = gql`
   query(
     $login: String!
     $includeComments: Boolean!
@@ -15,14 +15,8 @@ var history = gql`
           id
           body
           createdAt
-          issue {
-            id
-            title
-            url
-          }
-          repository {
-            nameWithOwner
-          }
+          issue { id, title, url }
+          repository { nameWithOwner }
         }
         pageInfo {
           hasNextPage
@@ -32,27 +26,27 @@ var history = gql`
       pullRequests(first: 100, after: $includePullRequestsEndCursor)
         @include(if: $includePullRequests) {
         nodes {
-          id
-          title
+          additions
           body
-          state
+          changedFiles
+          comments { totalCount }
+          commits { totalCount }
           createdAt
+          deletions
+          id
           mergedAt
+          repository { id, nameWithOwner }
+          state
+          state
+          title
           url
-          repository {
-            id
-            nameWithOwner
-          }
         }
         pageInfo {
           hasNextPage
           endCursor
         }
       }
+      }
     }
   }
 `
-
-module.exports = {
-  history
-}

@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "packages/ui"
+    },
+    {
+      "path": "packages/diary"
+    }
+  ],
+	"settings": {
+		"files.autoSave": "afterDelay",
+		"files.autoSaveDelay": 5000
+	}
+}

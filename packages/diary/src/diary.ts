@@ -1,12 +1,13 @@
-var fetch = require('node-fetch')
-var query = require('./query')
-var assert = require('assert')
-var dbFactory = require('./db')
-var keyBy = require('lodash/keyBy')
-var gh = require('./gh')
+import { DiaryRunOpts } from './bin'
+import { init as initDb, Toilet} from './db'
+import { gh } from './gh'
+import * as query from './query'
+import assert from 'assert'
+import fetch, { Headers } from 'node-fetch'
+import keyBy from 'lodash/keyBy'
 
-var diary = {
-  async getLatestCursorTokens (db) {
+export const diary = {
+  async getLatestCursorTokens (db: Toilet) {
     var res = await Promise.all([
       db.read(db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS),
       db.read(db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS)
@@ -16,17 +17,18 @@ var diary = {
       [db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS]: res[1]
     }
   },
-  async main (opts) {
+  async main (opts: DiaryRunOpts) {
     var config = opts || {}
     config.endpoint = config.endpoint || 'https://api.github.com/graphql'
     assert(config.login, 'GitHub login (user) required')
     config.token = config.token || (await gh.getToken())
-    var db = dbFactory({ filename: config.output })
+    var db = initDb({ filename: config.output })
     await db.open()
     await db.write('login', config.login)
     this.updateDiary({ config, db })
   },
-  async updateDiary ({ config, db }) {
+  async updateDiary (opts: { config: DiaryRunOpts, db: Toilet }) {
+    const { config, db } = opts
     var tokens = await this.getLatestCursorTokens(db)
     var hasMoreComments = tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS]
       ? tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS].hasNextPage
@@ -50,16 +52,17 @@ var diary = {
           ? tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS].endCursor
           : null
       })
+      if (!config.endpoint) throw new Error('no endpoint provided')
       var res = await fetch(config.endpoint, {
         body,
         method: 'POST',
-        headers: new fetch.Headers({
+        headers: new Headers({
           Authorization: `bearer ${config.token}`
         })
       })
       var json = await res.json()
       if (json.errors) {
-        throw new Error(json.errors.map(e => toString(e)).join(', '))
+        throw new Error(json.errors.map((e: any) => `${e}`).join(', '))
       }
       if (res.status >= 400) {
         throw new Error(
@@ -75,10 +78,11 @@ var diary = {
       console.info(`[diary] info: no additional diary data to collect`)
     }
   },
-  async appendDiary ({ db, res }) {
+  async appendDiary (opts: { db: Toilet, res: any }) {
+    const { db, res } = opts
     var { issueComments: ic, pullRequests: pr } = res.data.user
-    var { pageInfo: issueCommentsPageInfo, nodes: issueComments } = ic || {}
-    var { pageInfo: pullRequestsPageInfo, nodes: pullRequests } = pr || {}
+    var { pageInfo: issueCommentsPageInfo = {}, nodes: issueComments = [] } = ic || {}
+    var { pageInfo: pullRequestsPageInfo = {}, nodes: pullRequests = [] } = pr || {}
     var prsById = keyBy(pullRequests, 'id')
     var comsById = keyBy(issueComments, 'id')
     var [inDbComsById = {}, inDbPrsById = {}] = await Promise.all([
@@ -99,4 +103,6 @@ var diary = {
   }
 }
 
-module.exports = diary
+export {
+  DiaryRunOpts
+}
