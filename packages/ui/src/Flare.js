@@ -46,6 +46,7 @@ export class Flare extends PureComponent {
             )
           })}
           {root.descendants().map((d, i) => {
+            const isXLessThanPi = d.x < Math.PI
             return (
               <g
                 key={i}
@@ -58,9 +59,9 @@ export class Flare extends PureComponent {
                 <circle r='2.5' />
                 <text
                   dy='0.31em'
-                  x={d.x < Math.PI === !d.children ? 6 : -6}
-                  textAnchor={d.x < Math.PI === !d.children ? 'start' : 'end'}
-                  transform={`rotate(${(d.x < Math.PI
+                  x={isXLessThanPi === !d.children ? 6 : -6}
+                  textAnchor={isXLessThanPi === !d.children ? 'start' : 'end'}
+                  transform={`rotate(${(isXLessThanPi
                     ? d.x - Math.PI / 2
                     : d.x + Math.PI / 2) *
                     180 /
