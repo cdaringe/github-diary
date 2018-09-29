@@ -6,6 +6,7 @@
     "classnames": "^2.2.6",
     "d3": "^5.7.0",
     "lodash": "^4.17.10",
+    "panzoom": "^6.1.4",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-json-tree": "^0.11.0",

@@ -1,8 +1,9 @@
-import React from 'react'
-import groupBy from 'lodash/groupBy'
-import './gfm.css'
 import './Diary.css'
+import './gfm.css'
+import { Flare } from './Flare'
 import domtoimage from 'dom-to-image'
+import groupBy from 'lodash/groupBy'
+import React from 'react'
 
 function toTable (stats) {
   return (
@@ -17,6 +18,20 @@ function toTable (stats) {
       </tbody>
     </table>
   )
+}
+
+function githubToFlare (root, keyedData, extractLevels) {
+  var flareDataAggegator = { root }
+  Object.values(keyedData).forEach(pr => {
+    const levels = extractLevels(pr)
+    let slug = root
+    while (levels.length) {
+      slug += `.${levels[0].replace(/\./g, '_')}`
+      flareDataAggegator[slug] = slug
+      levels.shift()
+    }
+  })
+  return Object.values(flareDataAggegator).map(id => ({ id, value: id }))
 }
 
 export default class Diary extends React.PureComponent {
@@ -59,6 +74,14 @@ export default class Diary extends React.PureComponent {
         pullRequests: pullRequestsById
       }
     } = this.props
+    // const flareData = githubToFlare(login, pullRequestsById, pr => {
+    //   const [org, repo] = pr.repository.nameWithOwner.split('/')
+    //   return [ org, repo, pr.title]
+    // })
+    const flareData = githubToFlare(login, issueCommentsById, issue => {
+      const [org, repo] = issue.repository.nameWithOwner.split('/')
+      return [org, repo, issue.issue.title]
+    })
     var issueComments = Object.values(issueCommentsById)
     var pullRequests = Object.values(pullRequestsById)
     var numComments = issueComments.length
@@ -135,6 +158,7 @@ export default class Diary extends React.PureComponent {
         {toTable(mostCommentedOn)}
         <h2>Pull Requested most</h2>
         {toTable(mostPrOn)}
+        <Flare data={flareData} />
       </div>
     )
   }

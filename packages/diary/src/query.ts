@@ -50,3 +50,30 @@ export const history = gql`
     }
   }
 `
+
+export const contributedTo = `
+query(
+  $login: String!
+) {
+  user(login: $login) {
+    repositoriesContributedTo(
+      orderBy: { field: NAME, direction: ASC}
+      includeUserRepositories: true,
+      first: 100
+    ) {
+      nodes {
+        id
+        nameWithOwner
+        defaultBranchRef {
+          id
+          name
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+`

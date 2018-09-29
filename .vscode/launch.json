@@ -14,7 +14,10 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/packages/diary/src/index.js"
+      "program": "${workspaceFolder}/packages/diary/src/index.ts",
+      "outFiles": [
+        "${workspaceFolder}/packages/diary/build"
+      ]
     }
   ]
 }

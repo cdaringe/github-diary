@@ -6,6 +6,8 @@ import assert from 'assert'
 import fetch, { Headers } from 'node-fetch'
 import keyBy from 'lodash/keyBy'
 
+export type AppendDiaryOpts = { db: Toilet, res: any }
+
 export const diary = {
   async getLatestCursorTokens (db: Toilet) {
     var res = await Promise.all([
@@ -37,6 +39,7 @@ export const diary = {
       ? tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS].hasNextPage
       : true
     var i = 5 // temp!
+    return console.log('REMOVE ME')// @TODO
     if (hasMoreComments || hasMorePullRequests) {
       --i
       if (!i) return
@@ -78,7 +81,7 @@ export const diary = {
       console.info(`[diary] info: no additional diary data to collect`)
     }
   },
-  async appendDiary (opts: { db: Toilet, res: any }) {
+  async appendDiary (opts: AppendDiaryOpts) {
     const { db, res } = opts
     var { issueComments: ic, pullRequests: pr } = res.data.user
     var { pageInfo: issueCommentsPageInfo = {}, nodes: issueComments = [] } = ic || {}
