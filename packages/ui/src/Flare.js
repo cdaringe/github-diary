@@ -11,16 +11,19 @@ function radialPoint (x, y) {
 
 export class Flare extends PureComponent {
   constructor (props) {
+    // eslint-disable-line
     super(props)
-    this.state = { w: 0, h: 0 }
+    this.state = { width: 0 }
   }
   componentDidMount () {
-    const d = window.innerWidth
-    this.setState({ w: d, h: d })
-    panzoom(this.node.children[0])
+    const { width } = this.node.getBoundingClientRect()
+    this.setState({ width })
+    panzoom(this.node.children[0], {
+      smoothScroll: false
+    })
   }
   render () {
-    const { w, h } = this.state
+    const { width } = this.state
     const { data } = this.props
     var stratify = d3
       .stratify()
@@ -31,8 +34,12 @@ export class Flare extends PureComponent {
       .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth)
     var root = tree(stratify(data || DEFAULT_DATA))
     return (
-      <svg ref={node => (this.node = node)} width={w} height={h}>
-        <g transform={`translate(${w / 2 + 40}, ${h / 2 + 90})`}>
+      <svg
+        style={{ width: '100%', height: width }}
+        ref={node => (this.node = node)}
+        // width={w} height={h}
+      >
+        <g transform={`translate(${width / 2 + 40}, ${width / 2 + 90})`}>
           {root.links().map((link, i) => {
             return (
               <path
