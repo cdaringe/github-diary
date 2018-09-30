@@ -11,7 +11,6 @@ function radialPoint (x, y) {
 
 export class Flare extends PureComponent {
   constructor (props) {
-    // eslint-disable-line
     super(props)
     this.state = { width: 0 }
   }
@@ -24,20 +23,20 @@ export class Flare extends PureComponent {
   }
   render () {
     const { width } = this.state
-    const { data } = this.props
+    const { data: _data } = this.props
+    const data = _data || DEFAULT_DATA
     var stratify = d3
       .stratify()
       .parentId(d => d.id.substring(0, d.id.lastIndexOf('.')))
     var tree = d3
       .tree()
-      .size([2 * Math.PI, 500])
+      .size([2 * Math.PI, Math.floor(data.length * 1.1)])
       .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth)
-    var root = tree(stratify(data || DEFAULT_DATA))
+    var root = tree(stratify(data))
     return (
       <svg
         style={{ width: '100%', height: width }}
         ref={node => (this.node = node)}
-        // width={w} height={h}
       >
         <g transform={`translate(${width / 2 + 40}, ${width / 2 + 90})`}>
           {root.links().map((link, i) => {
