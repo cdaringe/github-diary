@@ -6,7 +6,7 @@ var pkg = require('./package.json')
 var projectRoot = __dirname
 
 var latestTag = `cdaringe/${pkg.name}`
-var currentTag =  `cdaringe/${pkg.name}:${pkg.version}`
+var currentTag = `cdaringe/${pkg.name}:${pkg.version}`
 
 var scripts = {
   async build () {

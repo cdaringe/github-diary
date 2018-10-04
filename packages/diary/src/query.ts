@@ -9,7 +9,7 @@ export const history = gql`
     $includePullRequestsEndCursor: String
   ) {
     user(login: $login) {
-      issueComments(first: 100, after: $includeCommentsEndCursor)
+      issueComments(first: 50, after: $includeCommentsEndCursor)
         @include(if: $includeComments) {
         nodes {
           id
@@ -23,19 +23,26 @@ export const history = gql`
           endCursor
         }
       }
-      pullRequests(first: 100, after: $includePullRequestsEndCursor)
+      pullRequests(first: 50, after: $includePullRequestsEndCursor)
         @include(if: $includePullRequests) {
         nodes {
           additions
           body
           changedFiles
-          comments { totalCount }
-          commits { totalCount }
+          comments {
+            totalCount
+          }
+          commits {
+            totalCount
+          }
           createdAt
           deletions
           id
           mergedAt
-          repository { id, nameWithOwner }
+          repository {
+            id,
+            nameWithOwner
+          }
           state
           state
           title
@@ -45,7 +52,6 @@ export const history = gql`
           hasNextPage
           endCursor
         }
-      }
       }
     }
   }
@@ -59,7 +65,7 @@ query(
     repositoriesContributedTo(
       orderBy: { field: NAME, direction: ASC}
       includeUserRepositories: true,
-      first: 100
+      first: 50
     ) {
       nodes {
         id

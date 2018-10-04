@@ -27,10 +27,12 @@ export const diary = {
     var db = initDb({ filename: config.output })
     await db.open()
     await db.write('login', config.login)
-    this.updateDiary({ config, db })
+    await this.updateDiary({ config, db })
   },
-  async updateDiary (opts: { config: DiaryRunOpts, db: Toilet }) {
+  async updateDiary (opts: { config: DiaryRunOpts, db: Toilet }): Promise<undefined> {
     const { config, db } = opts
+    const { endpoint } = config
+    if (!endpoint) throw new Error('no endpoint provided')
     var tokens = await this.getLatestCursorTokens(db)
     var hasMoreComments = tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS]
       ? tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS].hasNextPage
@@ -38,25 +40,21 @@ export const diary = {
     var hasMorePullRequests = tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS]
       ? tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS].hasNextPage
       : true
-    var i = 5 // temp!
-    return console.log('REMOVE ME')// @TODO
     if (hasMoreComments || hasMorePullRequests) {
-      --i
-      if (!i) return
       console.info(`[diary] info: requesting additionally diary data`)
       var body = query.history({
         login: config.login,
-        includeComments: hasMoreComments,
+        includeComments: !!hasMoreComments,
         includeCommentsEndCursor: tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS]
           ? tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS].endCursor
           : null,
-        includePullRequests: hasMorePullRequests,
+        includePullRequests: !!hasMorePullRequests,
         includePullRequestsEndCursor: tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS]
           ? tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS].endCursor
           : null
       })
-      if (!config.endpoint) throw new Error('no endpoint provided')
-      var res = await fetch(config.endpoint, {
+      if (!endpoint) throw new Error('no endpoint provided')
+      var res = await fetch(endpoint, {
         body,
         method: 'POST',
         headers: new Headers({
@@ -65,7 +63,7 @@ export const diary = {
       })
       var json = await res.json()
       if (json.errors) {
-        throw new Error(json.errors.map((e: any) => `${e}`).join(', '))
+        throw new Error(json.errors.map((e: any) => `${JSON.stringify(e, null, 2)}`).join(', '))
       }
       if (res.status >= 400) {
         throw new Error(
@@ -76,7 +74,7 @@ export const diary = {
       this.appendDiary({ res: json, db })
       // sleep to not piss off github :)
       await new Promise(resolve => setTimeout(resolve, 1000))
-      this.updateDiary({ config, db })
+      return this.updateDiary({ config, db })
     } else {
       console.info(`[diary] info: no additional diary data to collect`)
     }

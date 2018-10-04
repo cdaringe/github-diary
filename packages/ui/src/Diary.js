@@ -74,14 +74,15 @@ export default class Diary extends React.PureComponent {
         pullRequests: pullRequestsById
       }
     } = this.props
+    const flareData = null
     // const flareData = githubToFlare(login, pullRequestsById, pr => {
     //   const [org, repo] = pr.repository.nameWithOwner.split('/')
     //   return [ org, repo, pr.title]
     // })
-    const flareData = githubToFlare(login, issueCommentsById, issue => {
-      const [org, repo] = issue.repository.nameWithOwner.split('/')
-      return [org, repo, issue.issue.title]
-    })
+    // const flareData = githubToFlare(login, issueCommentsById, issue => {
+    //   const [org, repo] = issue.repository.nameWithOwner.split('/')
+    //   return [org, repo, issue.issue.title]
+    // })
     var issueComments = Object.values(issueCommentsById)
     var pullRequests = Object.values(pullRequestsById)
     var numComments = issueComments.length

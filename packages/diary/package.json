@@ -3,6 +3,7 @@
   "description": "reflect over your life on GitHub",
   "version": "0.0.5",
   "main": "build/index.js",
+  "bin": "build/bin.js",
   "author": "cdaringe <cdaringe@gmail.com>",
   "license": "MIT",
   "dependencies": {
@@ -16,7 +17,9 @@
   "scripts": {
     "format": "prettier-standard 'src/**/*.js'",
     "precommit": "lint-staged",
-    "build": "node ./scripts build",
+    "build:image": "node ./scripts build",
+    "build:src": "tsc",
+    "build": "run-p build:*",
     "publish:docker": "echo ",
     "postpublish": "run-s build publish:docker"
   },
