@@ -1,0 +1,10 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "packages/diary/package.json",
+        "packages/ui/package.json"
+      ]
+    }
+  }
+}
