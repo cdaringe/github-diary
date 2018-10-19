@@ -10,7 +10,7 @@ export type Point = [number, number]
 
 const DEFAULT_ZOOM_SPEED = 0.06
 
-function getScaleMultiplier(delta: number) {
+function getScaleMultiplier (delta: number) {
   var scaleMultiplier = 1
   if (delta > 0) { // zoom out
     scaleMultiplier = (1 - DEFAULT_ZOOM_SPEED)
@@ -32,7 +32,15 @@ export function canzoom (canvas: HTMLCanvasElement, renderer: CanzoomUserRendere
   let isRequesting = false
   let scale = 1
 
-  const render = () => renderer(ctx, scale, xCenter, yCenter)
+  const render =
+    () => {
+      if (isRequesting) return
+      isRequesting = true
+      window.requestAnimationFrame(() => {
+        isRequesting = false
+        renderer(ctx, scale, xCenter, yCenter)
+      })
+    }
 
   const onDrag = (ev: DragEvent) => {
     endDragPoint = [ev.clientX, ev.clientY]
@@ -50,9 +58,12 @@ export function canzoom (canvas: HTMLCanvasElement, renderer: CanzoomUserRendere
     })
   }
   function onScroll (evt: WheelEvent) {
+    evt.preventDefault()
     const scalar = getScaleMultiplier(evt.deltaY)
     scale *= scalar
+    render()
   }
+  canvas.addEventListener('wheel', onScroll)
   canvas.addEventListener('mousewheel', onScroll)
   canvas.addEventListener('drag', onDrag)
   canvas.addEventListener('dragstart', (ev: DragEvent) => {
