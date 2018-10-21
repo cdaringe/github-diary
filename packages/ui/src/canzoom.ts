@@ -1,3 +1,4 @@
+// import { debounce } from 'lodash'
 export type CanzoomRender = () => void
 export type CanzoomUserRenderer = (
   ctx: CanvasRenderingContext2D,
@@ -8,7 +9,7 @@ export type CanzoomUserRenderer = (
 
 export type Point = [number, number]
 
-const DEFAULT_ZOOM_SPEED = 0.06
+const DEFAULT_ZOOM_SPEED = 0.1
 
 function getScaleMultiplier (delta: number) {
   var scaleMultiplier = 1
@@ -44,27 +45,34 @@ export function canzoom (canvas: HTMLCanvasElement, renderer: CanzoomUserRendere
 
   const onDrag = (ev: DragEvent) => {
     endDragPoint = [ev.clientX, ev.clientY]
-    if (isRequesting) return
-    isRequesting = true
-    window.requestAnimationFrame(() => {
-      isRequesting = false
-      if (!startDragPoint) return
-      const [x1, y1] = startDragPoint
-      const [x2, y2] = endDragPoint
-      const [dx, dy] = [x2 - x1, y2 - y1] as Point
-      startDragPoint = endDragPoint
-      ;[xCenter, yCenter] = [xCenter + dx, yCenter + dy]
-      render()
-    })
+    if (!startDragPoint) return
+    const [x1, y1] = startDragPoint
+    const [x2, y2] = endDragPoint
+    const [dx, dy] = [x2 - x1, y2 - y1] as Point
+    startDragPoint = endDragPoint
+    ;[xCenter, yCenter] = [xCenter - dx, yCenter - dy]
+    render()
   }
   function onScroll (evt: WheelEvent) {
-    evt.preventDefault()
+    evt.stopPropagation()
+    evt.stopImmediatePropagation()
+    // const [lcx, lcy] = [xCenter, yCenter]
     const scalar = getScaleMultiplier(evt.deltaY)
     scale *= scalar
+    const [dx, dy] = [(-canvas.width/2 + evt.offsetX), (-canvas.height/2 + evt.offsetY)]
+    const [px, py] = [(xCenter + dx) * scalar, (yCenter + dy) * scalar]
+    xCenter = px - dx
+    yCenter = py - dy
+    // console.table([
+    //   ['last-center', lcx, lcy],
+    //   ['zoom-offset', dx, dy],
+    //   ['unadjusted-next-center', lcx*scalar, lcy*scalar],
+    //   ['zoom-point', px, py],
+    //   ['next-center', xCenter, yCenter],
+    // ])
     render()
   }
   canvas.addEventListener('wheel', onScroll)
-  canvas.addEventListener('mousewheel', onScroll)
   canvas.addEventListener('drag', onDrag)
   canvas.addEventListener('dragstart', (ev: DragEvent) => {
     startDragPoint = [ev.clientX, ev.clientY]
