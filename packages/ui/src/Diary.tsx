@@ -1,11 +1,20 @@
 import './Diary.css'
 import './gfm.css'
-import { Flare } from './Flare'
-import domtoimage from 'dom-to-image'
+import { toImg } from './util/dom-to-img'
+import FlareViewer from './FlareViewer'
 import groupBy from 'lodash/groupBy'
 import React from 'react'
 
-function toTable (stats) {
+const values = Object['values']
+export type Stat = {
+  text: string
+  value: any
+}
+
+export type CanvasNode = HTMLCanvasElement
+export type ButtonNode = HTMLButtonElement
+
+function toTable (stats: Stat[]) {
   return (
     <table>
       <tbody>
@@ -20,52 +29,21 @@ function toTable (stats) {
   )
 }
 
-function githubToFlare (root, keyedData, extractLevels) {
-  var flareDataAggegator = { root }
-  Object.values(keyedData).forEach(pr => {
-    const levels = extractLevels(pr)
-    let slug = root
-    while (levels.length) {
-      slug += `.${levels[0].replace(/\./g, '_')}`
-      flareDataAggegator[slug] = slug
-      levels.shift()
-    }
-  })
-  return Object.values(flareDataAggegator).map(id => ({ id, value: id }))
+export type DiaryProps = {
+  diary: any
+}
+export type DiaryState = {
+  isFlareFullscreen: boolean
 }
 
-export default class Diary extends React.PureComponent {
-  diaryRef = ref => {
-    this.__diary_node = ref
-    window.__diary_node = ref
-  }
-  buttonRef = ref => (this.__button_ref = ref)
-  toImg = async () => {
-    // hack around download bug
-    var map = {
-      margin: { wip: 0 },
-      position: { wip: 'fixed' },
-      top: { wip: 0 },
-      background: { wip: 'white' },
-      zIndex: { wip: 10 }
-    }
-    var buttonDisplay = this.__button_ref.style.display
-    this.__button_ref.style.display = 'none'
-    for (var k in map) {
-      map[k].prev = this.__diary_node.style[k]
-      this.__diary_node.style[k] = map[k].wip
-    }
-    var dataUrl = await domtoimage.toPng(this.__diary_node, {
-      bgcolor: 'white'
-    })
-    // unhack download bug
-    for (k in map) this.__diary_node.style[k] = map[k].prev
-    this.__button_ref.style.display = buttonDisplay
-    var link = document.createElement('a')
-    link.download = 'diary.png'
-    link.href = dataUrl
-    link.click()
-  }
+export default class Diary extends React.PureComponent<DiaryProps, DiaryState> {
+  public __diary_node: CanvasNode
+  public __button_ref: ButtonNode
+
+  buttonRef = (ref: ButtonNode) => (this.__button_ref = ref)
+  diaryRef = (ref: CanvasNode) => (this.__diary_node = ref)
+  toImg = () => toImg(this.__button_ref, this.__diary_node, 'diary.png')
+
   render () {
     var {
       diary: {
@@ -74,17 +52,8 @@ export default class Diary extends React.PureComponent {
         pullRequests: pullRequestsById
       }
     } = this.props
-    // const flareData = null
-    // const flareData = githubToFlare(login, pullRequestsById, pr => {
-    //   const [org, repo] = pr.repository.nameWithOwner.split('/')
-    //   return [ org, repo, pr.title]
-    // })
-    const flareData = githubToFlare(login, issueCommentsById, issue => {
-      const [org, repo] = issue.repository.nameWithOwner.split('/')
-      return [org, repo, issue.issue.title]
-    })
-    var issueComments = Object.values(issueCommentsById)
-    var pullRequests = Object.values(pullRequestsById)
+    var issueComments = values(issueCommentsById)
+    var pullRequests = values(pullRequestsById)
     var numComments = issueComments.length
     var numPrs = pullRequests.length
     var numInteractions = numComments + numPrs
@@ -95,25 +64,25 @@ export default class Diary extends React.PureComponent {
     var numUniqueRepos = Object.keys(
       Object.assign({}, prsByRepo, commentsByRepo)
     ).length
-    var mostCommentedOn = Object.values(commentsByRepo)
-      .sort((a, b) => {
+    var mostCommentedOn = values(commentsByRepo)
+      .sort((a: any[], b: any[]) => {
         if (a.length < b.length) return 1
         if (a.length === b.length) return 0
         return -1
       })
       .slice(0, 10)
-      .map(set => ({
+      .map((set: any) => ({
         text: set[0].repository.nameWithOwner,
         value: set.length
       }))
-    var mostPrOn = Object.values(prsByRepo)
-      .sort((a, b) => {
+    var mostPrOn = values(prsByRepo)
+      .sort((a: any[], b: any[]) => {
         if (a.length < b.length) return 1
         if (a.length === b.length) return 0
         return -1
       })
       .slice(0, 10)
-      .map(set => ({
+      .map((set: any) => ({
         text: set[0].repository.nameWithOwner,
         value: set.length
       }))
@@ -130,7 +99,7 @@ export default class Diary extends React.PureComponent {
     return (
       <div
         id='diary_container'
-        ref={this.diaryRef}
+        ref={this.diaryRef as any}
         className='diary markdown-body'
       >
         <button
@@ -152,6 +121,7 @@ export default class Diary extends React.PureComponent {
         </h1>
         <h2>Overall</h2>
         {toTable(statGroup1)}
+        <FlareViewer diary={this.props.diary} />
         <h2>Unique Contributions</h2>
         Number of unique repositories...
         {toTable(statGroupUnique)}
@@ -159,7 +129,6 @@ export default class Diary extends React.PureComponent {
         {toTable(mostCommentedOn)}
         <h2>Pull Requested most</h2>
         {toTable(mostPrOn)}
-        <Flare data={flareData} />
       </div>
     )
   }

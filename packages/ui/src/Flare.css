@@ -10,4 +10,12 @@
   right: 0;
   bottom: 0;
   background: white;
+  z-index: 1;
+}
+
+.flare__close-button {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  z-index: 2;
 }

@@ -10,8 +10,15 @@
       "path": "packages/diary"
     }
   ],
-	"settings": {
-		"files.autoSave": "afterDelay",
-		"files.autoSaveDelay": 5000
-	}
+  "settings": {
+    "files.autoSave": "onFocusChange",
+    "files.autoSaveDelay": 10000,
+    "emeraldwalk.runonsave": {
+      "commands": [
+        {
+          "cmd": "npx prettier-standard ${file}"
+        }
+      ]
+    }
+  }
 }
