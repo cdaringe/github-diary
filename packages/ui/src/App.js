@@ -7,6 +7,8 @@ import MagicDropzone from 'react-magic-dropzone'
 import React, { Component } from 'react'
 const STORAGE_PREFIX = '__filename__'
 
+const keyFromFilename = filename => `${STORAGE_PREFIX}${filename}`
+
 class App extends Component {
   constructor (props) {
     super(props)
@@ -23,20 +25,27 @@ class App extends Component {
     var file = accepted[0]
     reader.readAsText(file, 'UTF-8')
     reader.onload = evt => {
-      window.localStorage.setItem(
-        `${STORAGE_PREFIX}${file.name}`,
-        evt.target.result
-      )
-      if (!this.state.filename) this.onFilenameSelect(file.name)
+      this.setDiary(file.name, evt.target.result)
     }
   }
 
   onFilenameSelect = filename => this.setState({ filename })
 
+  loadDemo = async () => {
+    const res = await window.fetch('/diary.json')
+    const json = await res.json()
+    this.setDiary('demo.json', JSON.stringify(json))
+  }
+
+  setDiary (name, content) {
+    window.localStorage.setItem(keyFromFilename(name), content)
+    if (!this.state.filename) this.onFilenameSelect(name)
+  }
+
   render () {
     const { filename } = this.state
     const diary = filename
-      ? JSON.parse(window.localStorage.getItem(`${STORAGE_PREFIX}${filename}`))
+      ? JSON.parse(window.localStorage.getItem(keyFromFilename(filename)))
       : null
     let showJsonTree
     if (process.env.NODE_ENV === 'development') showJsonTree = true
@@ -74,9 +83,12 @@ class App extends Component {
                 rel='noopener noreferrer'
                 href='https://www.npmjs.com/package/github-diary'
               >
-                github-diary on npm
+                github-diary on npm.
               </a>
             </p>
+            <button onClick={this.loadDemo} className='demo__load-button'>
+              Load Demo!
+            </button>
           </div>
         )}
         {showJsonTree &&

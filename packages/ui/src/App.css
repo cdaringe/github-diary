@@ -72,11 +72,25 @@
   background: rgb(250, 249, 249);
   border-radius: 2px;
   border: lightgray solid 1px;
-  height: 90px;
   margin: 40px auto;
   padding: 20px;
   text-align: center;
   width: 200px;
+}
+
+.demo__load-button {
+  padding: 10px;
+  border-radius: 3px;
+  margin: 5px;
+  width: 100%;
+  background-color: #499a4c;
+  color: white;
+}
+
+.demo__load-button:hover {
+  background: rgb(79, 128, 85);
+  cursor: pointer;
+  box-shadow: #222 0 0 10px -4px;
 }
 
 .small {

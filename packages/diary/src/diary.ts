@@ -27,18 +27,18 @@ export const diary = {
     var db = initDb({ filename: config.output })
     await db.open()
     await db.write('login', config.login)
-    await this.updateDiary({ config, db })
+    await this.updateDiary({ config, db, firstRun: true })
   },
-  async updateDiary (opts: { config: DiaryRunOpts, db: Toilet }): Promise<undefined> {
-    const { config, db } = opts
+  async updateDiary (opts: { config: DiaryRunOpts, db: Toilet, firstRun?: boolean }): Promise<undefined> {
+    const { config, db, firstRun = false } = opts
     const { endpoint } = config
     if (!endpoint) throw new Error('no endpoint provided')
     var tokens = await this.getLatestCursorTokens(db)
-    var hasMoreComments = tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS]
-      ? tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS].hasNextPage
+    var hasMoreComments = firstRun ? true : tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS]
+      ? (tokens[db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS].hasNextPage === true)
       : true
-    var hasMorePullRequests = tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS]
-      ? tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS].hasNextPage
+    var hasMorePullRequests = firstRun ? true : tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS]
+      ? (tokens[db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS].hasNextPage === true)
       : true
     if (hasMoreComments || hasMorePullRequests) {
       console.info(`[diary] info: requesting additionally diary data`)
@@ -97,10 +97,8 @@ export const diary = {
       db.write(db.KEYS.PULL_REQUESTS, inDbPrsById)
     ])
     // write pageInfo last s.t. on failure we will re-try the prior pages
-    await Promise.all([
-      db.write(db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS, issueCommentsPageInfo),
-      db.write(db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS, pullRequestsPageInfo)
-    ])
+    if (issueCommentsPageInfo.endCursor) await db.write(db.CURSOR_PAGE_INFO_KEYS.ISSUE_COMMENTS, issueCommentsPageInfo)
+    if (pullRequestsPageInfo.endCursor) await db.write(db.CURSOR_PAGE_INFO_KEYS.PULL_REQUESTS, pullRequestsPageInfo)
   }
 }
 
