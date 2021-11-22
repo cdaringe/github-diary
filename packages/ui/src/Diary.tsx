@@ -1,20 +1,18 @@
-import './Diary.css'
-import './gfm.css'
-import { toImg } from './util/dom-to-img'
-import FlareViewer from './FlareViewer'
-import groupBy from 'lodash/groupBy'
-import React from 'react'
+import { toImg } from "./util/dom-to-img";
+import FlareViewer from "./FlareViewer";
+import groupBy from "lodash/groupBy";
+import React from "react";
 
-const values = Object['values']
+const values = Object["values"];
 export type Stat = {
-  text: string
-  value: any
-}
+  text: string;
+  value: any;
+};
 
-export type CanvasNode = HTMLCanvasElement
-export type ButtonNode = HTMLButtonElement
+export type CanvasNode = HTMLCanvasElement;
+export type ButtonNode = HTMLButtonElement;
 
-function toTable (stats: Stat[]) {
+function toTable(stats: Stat[]) {
   return (
     <table>
       <tbody>
@@ -26,94 +24,97 @@ function toTable (stats: Stat[]) {
         ))}
       </tbody>
     </table>
-  )
+  );
 }
 
 export type DiaryProps = {
-  diary: any
-}
+  diary: any;
+};
 export type DiaryState = {
-  isFlareFullscreen: boolean
-}
+  isFlareFullscreen: boolean;
+};
 
 export default class Diary extends React.PureComponent<DiaryProps, DiaryState> {
-  public __diary_node: CanvasNode
-  public __button_ref: ButtonNode
+  public __diary_node: CanvasNode | undefined;
+  public __button_ref: ButtonNode | undefined;
 
-  buttonRef = (ref: ButtonNode) => (this.__button_ref = ref)
-  diaryRef = (ref: CanvasNode) => (this.__diary_node = ref)
-  toImg = () => toImg(this.__button_ref, this.__diary_node, 'diary.png')
+  buttonRef = (ref: ButtonNode) => (this.__button_ref = ref);
+  diaryRef = (ref: CanvasNode) => (this.__diary_node = ref);
+  toImg = () => {
+    if (!this.__button_ref || !this.__diary_node) return;
+    toImg(this.__button_ref, this.__diary_node, "diary.png");
+  };
 
-  render () {
+  render() {
     var {
       diary: {
         login,
         issueComments: issueCommentsById,
-        pullRequests: pullRequestsById
-      }
-    } = this.props
-    var issueComments = values(issueCommentsById)
-    var pullRequests = values(pullRequestsById)
-    var numComments = issueComments.length
-    var numPrs = pullRequests.length
-    var numInteractions = numComments + numPrs
-    var prsByRepo = groupBy(pullRequests, 'repository.nameWithOwner')
-    var commentsByRepo = groupBy(issueComments, 'repository.nameWithOwner')
-    var numUniqueRepoPrAgainst = Object.keys(prsByRepo).length
-    var numUniqueRepoCommentAgainst = Object.keys(commentsByRepo).length
+        pullRequests: pullRequestsById,
+      },
+    } = this.props;
+    var issueComments = values(issueCommentsById);
+    var pullRequests = values(pullRequestsById);
+    var numComments = issueComments.length;
+    var numPrs = pullRequests.length;
+    var numInteractions = numComments + numPrs;
+    var prsByRepo = groupBy(pullRequests, "repository.nameWithOwner");
+    var commentsByRepo = groupBy(issueComments, "repository.nameWithOwner");
+    var numUniqueRepoPrAgainst = Object.keys(prsByRepo).length;
+    var numUniqueRepoCommentAgainst = Object.keys(commentsByRepo).length;
     var numUniqueRepos = Object.keys(
       Object.assign({}, prsByRepo, commentsByRepo)
-    ).length
+    ).length;
     var mostCommentedOn = values(commentsByRepo)
       .sort((a: any[], b: any[]) => {
-        if (a.length < b.length) return 1
-        if (a.length === b.length) return 0
-        return -1
+        if (a.length < b.length) return 1;
+        if (a.length === b.length) return 0;
+        return -1;
       })
       .slice(0, 10)
       .map((set: any) => ({
         text: set[0].repository.nameWithOwner,
-        value: set.length
-      }))
+        value: set.length,
+      }));
     var mostPrOn = values(prsByRepo)
       .sort((a: any[], b: any[]) => {
-        if (a.length < b.length) return 1
-        if (a.length === b.length) return 0
-        return -1
+        if (a.length < b.length) return 1;
+        if (a.length === b.length) return 0;
+        return -1;
       })
       .slice(0, 10)
       .map((set: any) => ({
         text: set[0].repository.nameWithOwner,
-        value: set.length
-      }))
+        value: set.length,
+      }));
     var statGroup1 = [
-      { text: 'Number of comments', value: numComments },
-      { text: 'Number of pull requests', value: numPrs },
-      { text: 'Total number of interactions', value: numInteractions }
-    ]
+      { text: "Number of comments", value: numComments },
+      { text: "Number of pull requests", value: numPrs },
+      { text: "Total number of interactions", value: numInteractions },
+    ];
     var statGroupUnique = [
-      { text: 'Pull requested against:', value: numUniqueRepoPrAgainst },
-      { text: 'Commented against:', value: numUniqueRepoCommentAgainst },
-      { text: 'Interacted with:', value: numUniqueRepos }
-    ]
+      { text: "Pull requested against:", value: numUniqueRepoPrAgainst },
+      { text: "Commented against:", value: numUniqueRepoCommentAgainst },
+      { text: "Interacted with:", value: numUniqueRepos },
+    ];
     return (
       <div
-        id='diary_container'
+        id="diary_container"
         ref={this.diaryRef as any}
-        className='diary markdown-body'
+        className="diary markdown-body"
       >
         <button
           ref={this.buttonRef}
           onClick={this.toImg}
-          style={{ float: 'right', margin: 10 }}
+          style={{ float: "right", margin: 10 }}
         >
           download
         </button>
         <h1>
-          GitHub.com Diary -{' '}
+          GitHub.com Diary -{" "}
           <a
-            target='_blank'
-            rel='noopener noreferrer'
+            target="_blank"
+            rel="noopener noreferrer"
             href={`https://github.com/${login}`}
           >
             {login}
@@ -130,6 +131,6 @@ export default class Diary extends React.PureComponent<DiaryProps, DiaryState> {
         <h2>Pull Requested most</h2>
         {toTable(mostPrOn)}
       </div>
-    )
+    );
   }
 }

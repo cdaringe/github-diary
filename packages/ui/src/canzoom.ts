@@ -1,80 +1,87 @@
 // import { debounce } from 'lodash'
-export type CanzoomRender = () => void
+export type CanzoomRender = () => void;
 export type CanzoomUserRenderer = (
   ctx: CanvasRenderingContext2D,
   scale: number,
   x_center: number,
   y_center: number
-) => void
+) => void;
 
-export type Point = [number, number]
+export type Point = [number, number];
 
-const DEFAULT_ZOOM_SPEED = 0.1
+const DEFAULT_ZOOM_SPEED = 0.1;
 
-function getScaleMultiplier (delta: number) {
-  var scaleMultiplier = 1
+function getScaleMultiplier(delta: number) {
+  var scaleMultiplier = 1;
   if (delta > 0) {
     // zoom out
-    scaleMultiplier = 1 - DEFAULT_ZOOM_SPEED
+    scaleMultiplier = 1 - DEFAULT_ZOOM_SPEED;
   } else if (delta < 0) {
     // zoom in
-    scaleMultiplier = 1 + DEFAULT_ZOOM_SPEED
+    scaleMultiplier = 1 + DEFAULT_ZOOM_SPEED;
   }
-  return scaleMultiplier
+  return scaleMultiplier;
 }
 
-export function canzoom (
+export function canzoom(
   canvas: HTMLCanvasElement,
   renderer: CanzoomUserRenderer
 ) {
-  const ctx = canvas.getContext('2d')
+  const ctx = canvas.getContext("2d");
   if (!canvas.draggable) {
     throw new Error(
-      'canvas is not draggable.  did you mean to add the `draggable` attribute?'
-    )
+      "canvas is not draggable.  did you mean to add the `draggable` attribute?"
+    );
   }
-  canvas.draggable = true
-  if (!ctx) throw new Error('failed to get canvas 2d context')
-  const { width, height } = canvas.getBoundingClientRect() as DOMRect
-  let [xCenter, yCenter] = [width / 2, height / 2]
-  let startDragPoint: Point | null = null
-  let endDragPoint: Point = [-1, -1]
-  let isRequesting = false
-  let scale = 1
+  canvas.draggable = true;
+  if (!ctx) throw new Error("failed to get canvas 2d context");
+  const { width, height } = canvas.getBoundingClientRect() as DOMRect;
+  let [xCenter, yCenter] = [width / 2, height / 2];
+  let startDragPoint: Point | null = null;
+  let endDragPoint: Point = [-1, -1];
+  let isRequesting = false;
+  let scale = 1;
 
   const render = () => {
-    if (isRequesting) return
-    isRequesting = true
+    if (isRequesting) return;
+    isRequesting = true;
     window.requestAnimationFrame(() => {
-      isRequesting = false
-      renderer(ctx, scale, xCenter, yCenter)
-    })
-  }
+      isRequesting = false;
+      renderer(ctx, scale, xCenter, yCenter);
+    });
+  };
 
   const onDrag = (ev: DragEvent) => {
-    endDragPoint = [ev.clientX, ev.clientY]
-    if (!startDragPoint) return
-    const [x1, y1] = startDragPoint
-    const [x2, y2] = endDragPoint
-    const [dx, dy] = [x2 - x1, y2 - y1] as Point
-    startDragPoint = endDragPoint
-    ;[xCenter, yCenter] = [xCenter - dx, yCenter - dy]
-    render()
-  }
-  function onScroll (evt: WheelEvent) {
-    evt.preventDefault()
-    evt.stopPropagation()
-    evt.stopImmediatePropagation()
+    if (isRequesting) return false;
+    endDragPoint = [ev.clientX, ev.clientY];
+    if (ev.clientX === 0 || ev.clientY === 0) {
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=505521
+      return;
+    }
+    if (!startDragPoint) return;
+    const [x1, y1] = startDragPoint;
+    const [x2, y2] = endDragPoint;
+    const [dx, dy] = [x2 - x1, y2 - y1] as Point;
+    if (dx === 0 && dy === 0) return;
+    console.log({ dx, dy, x1, x2 });
+    startDragPoint = endDragPoint;
+    [xCenter, yCenter] = [xCenter - dx, yCenter - dy];
+    render();
+  };
+  function onScroll(evt: WheelEvent) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    evt.stopImmediatePropagation();
     // const [lcx, lcy] = [xCenter, yCenter]
-    const scalar = getScaleMultiplier(evt.deltaY)
-    scale *= scalar
+    const scalar = getScaleMultiplier(evt.deltaY);
+    scale *= scalar;
     const [dx, dy] = [
       -canvas.width / 2 + evt.offsetX,
-      -canvas.height / 2 + evt.offsetY
-    ]
-    const [px, py] = [(xCenter + dx) * scalar, (yCenter + dy) * scalar]
-    xCenter = px - dx
-    yCenter = py - dy
+      -canvas.height / 2 + evt.offsetY,
+    ];
+    const [px, py] = [(xCenter + dx) * scalar, (yCenter + dy) * scalar];
+    xCenter = px - dx;
+    yCenter = py - dy;
     // console.table([
     //   ['last-center', lcx, lcy],
     //   ['zoom-offset', dx, dy],
@@ -82,15 +89,17 @@ export function canzoom (
     //   ['zoom-point', px, py],
     //   ['next-center', xCenter, yCenter],
     // ])
-    render()
+    render();
   }
-  canvas.addEventListener('wheel', onScroll)
-  canvas.addEventListener('drag', onDrag)
-  canvas.addEventListener('dragstart', (ev: DragEvent) => {
-    startDragPoint = [ev.clientX, ev.clientY]
-  })
-  canvas.addEventListener('dragend', (ev: DragEvent) => {
-    startDragPoint = null
-  })
-  return render
+  canvas.addEventListener("wheel", onScroll);
+  canvas.addEventListener("drag", onDrag);
+  canvas.addEventListener("dragstart", (ev: DragEvent) => {
+    console.log("dragstart");
+    startDragPoint = [ev.clientX, ev.clientY];
+  });
+  canvas.addEventListener("dragend", (ev: DragEvent) => {
+    console.log("dragend");
+    startDragPoint = null;
+  });
+  return render;
 }
