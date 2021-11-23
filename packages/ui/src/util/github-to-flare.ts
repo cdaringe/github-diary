@@ -11,7 +11,7 @@ export function githubToFlare(
     let slug = root;
     while (levels.length) {
       slug += `.${levels[0].replace(/\./g, "_")}`;
-      flareDataAggegator[slug] = slug;
+      (flareDataAggegator as any)[slug] = slug;
       levels.shift();
     }
   });

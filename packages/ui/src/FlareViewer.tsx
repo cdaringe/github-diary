@@ -84,7 +84,7 @@ export default class FlareViewer extends React.Component<
             className="flare__close-button"
             onClick={() => this.setState({ isFlareFullscreen: false })}
           >
-            close
+            Close
           </button>
         )}
         <Flare

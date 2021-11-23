@@ -57,7 +57,7 @@ class App extends Component {
           <h1 className="App-title">GitHub Diary</h1>
           <div className="logo_container">
             <div className="logo_bg" />
-            <img src={logo} className="App-logo" alt="logo" />
+            <img {...logo} width={70} className="App-logo" alt="logo" />
           </div>
         </header>
         <MagicDropzone id="dropzone" accept=".json" onDrop={this.onDrop}>

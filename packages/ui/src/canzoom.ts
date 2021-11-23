@@ -33,7 +33,7 @@ export function canzoom(
       "canvas is not draggable.  did you mean to add the `draggable` attribute?"
     );
   }
-  canvas.draggable = true;
+  canvas.draggable = false;
   if (!ctx) throw new Error("failed to get canvas 2d context");
   const { width, height } = canvas.getBoundingClientRect() as DOMRect;
   let [xCenter, yCenter] = [width / 2, height / 2];
@@ -51,19 +51,18 @@ export function canzoom(
     });
   };
 
-  const onDrag = (ev: DragEvent) => {
+  const onDrag = (ev: MouseEvent) => {
+    if (!startDragPoint) return;
     if (isRequesting) return false;
     endDragPoint = [ev.clientX, ev.clientY];
     if (ev.clientX === 0 || ev.clientY === 0) {
       // https://bugzilla.mozilla.org/show_bug.cgi?id=505521
       return;
     }
-    if (!startDragPoint) return;
     const [x1, y1] = startDragPoint;
     const [x2, y2] = endDragPoint;
     const [dx, dy] = [x2 - x1, y2 - y1] as Point;
     if (dx === 0 && dy === 0) return;
-    console.log({ dx, dy, x1, x2 });
     startDragPoint = endDragPoint;
     [xCenter, yCenter] = [xCenter - dx, yCenter - dy];
     render();
@@ -92,14 +91,14 @@ export function canzoom(
     render();
   }
   canvas.addEventListener("wheel", onScroll);
-  canvas.addEventListener("drag", onDrag);
-  canvas.addEventListener("dragstart", (ev: DragEvent) => {
-    console.log("dragstart");
+  canvas.addEventListener("mousemove", onDrag);
+  canvas.addEventListener("mousedown", (ev) => {
     startDragPoint = [ev.clientX, ev.clientY];
   });
-  canvas.addEventListener("dragend", (ev: DragEvent) => {
-    console.log("dragend");
+  const onDragEnd = (ev: MouseEvent) => {
     startDragPoint = null;
-  });
+  };
+  canvas.addEventListener("mouseup", onDragEnd);
+  canvas.addEventListener("mouseout", onDragEnd);
   return render;
 }

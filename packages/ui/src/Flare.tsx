@@ -78,9 +78,10 @@ export type FlareState = {
 };
 
 export class Flare extends React.Component<FlareProps, FlareState> {
-  public node: HTMLCanvasElement;
-  public canvasContext: CanvasRenderingContext2D;
-  public renderer: CanzoomRender;
+  public node: HTMLCanvasElement | undefined;
+  public canvasContext: CanvasRenderingContext2D | undefined;
+  public renderer: CanzoomRender | undefined;
+
   constructor(props: FlareProps) {
     super(props);
     this.state = { width: 0 };
@@ -89,12 +90,14 @@ export class Flare extends React.Component<FlareProps, FlareState> {
     this.reset();
   }
   reset() {
+    if (!this.node) return;
     const { width } = this.node.getBoundingClientRect();
     this.setState({ width });
     this.canvasContext = this.node.getContext("2d")!;
     this.renderCanvas(this.canvasContext, this.props.data, width);
   }
   componentDidUpdate() {
+    if (!this.canvasContext) return;
     this.renderCanvas(this.canvasContext, this.props.data, this.state.width);
   }
   renderCanvas(
@@ -107,7 +110,6 @@ export class Flare extends React.Component<FlareProps, FlareState> {
     ctx.canvas.setAttribute("height", width.toString());
     if (this.renderer) return this.renderer();
     this.renderer = canzoom(ctx.canvas, (ctx, scale, xCenter, yCenter) => {
-      console.log(xCenter, yCenter);
       (window as any)._ctx = ctx;
       ctx.save();
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -139,7 +141,7 @@ export class Flare extends React.Component<FlareProps, FlareState> {
       root.links().forEach((link) => drawBezierLink(ctx, link, center, bounds));
       ctx.stroke();
       ctx.restore();
-      root.descendants().map((d, i) => {
+      root.descendants().map((d, _i) => {
         const [x, y] = toCartesian(d.x, d.y, center);
         const [xp, yp] = [x * scale, y * scale];
         drawNode(ctx, xp, yp);
