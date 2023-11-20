@@ -2,23 +2,13 @@
   "name": "ui",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "classnames": "^2.2.6",
-    "d3": "^5.7.0",
-    "dom-to-image": "^2.6.0",
-    "lodash": "^4.17.11",
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2",
-    "react-json-tree": "^0.11.0",
-    "react-magic-dropzone": "^1.0.1"
-  },
   "scripts": {
-    "build": "next build && next export",
+    "build": "next build && next export && cp public/diary.json out/diary.json",
     "deploy": "run-s build scp",
     "eject": "next eject",
     "format": "prettier 'src/**/*.{js,ts,tsx}' --write",
     "scp": "bash deploy-scp.sh",
-    "start": "next dev",
+    "dev": "next dev",
     "test": "next test --env=jsdom"
   },
   "lint-staged": {
@@ -30,6 +20,12 @@
     }
   },
   "devDependencies": {
+    "classnames": "^2.2.6",
+    "d3": "^5.7.0",
+    "dom-to-image": "^2.6.0",
+    "lodash": "^4.17.11",
+    "react-json-tree": "^0.11.0",
+    "react-magic-dropzone": "^1.0.1",
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
@@ -38,17 +34,16 @@
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.116",
     "@types/node": "^12.20.37",
-    "@types/react": "^17.0.36",
+    "@types/react": "^17.0.70",
     "@types/react-dom": "^17.0.11",
     "husky": "^1.0.1",
     "lint-staged": "^7.1.0",
-    "next": "12.0.4",
+    "next": "13.5.6",
     "npm-run-all": "^4.1.3",
     "prettier": "2.4.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "next": "^4.0.3",
-    "typescript": "^4.5.2"
+    "react": "^18",
+    "react-dom": "^18",
+    "typescript": "^5"
   },
   "browserslist": [
     ">0.25%",
