@@ -28,7 +28,7 @@
     "react-magic-dropzone": "^1.0.1",
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
+    "@testing-library/user-event": "^14.0.0",
     "@types/classnames": "^2.2.6",
     "@types/d3": "^5.0.0",
     "@types/jest": "^26.0.24",
