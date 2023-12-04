@@ -1,4 +1,4 @@
-FROM node:10-alpine
+FROM node:20-alpine
 RUN mkdir -p /diary
 WORKDIR /diary
 COPY yarn.lock yarn.lock
