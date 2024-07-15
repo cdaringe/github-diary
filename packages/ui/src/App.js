@@ -17,6 +17,9 @@ class App extends Component {
         : Object.keys(window.localStorage)
             .filter((item) => item.indexOf(STORAGE_PREFIX) === 0)
             .map((item) => item.replace(STORAGE_PREFIX, ""));
+    if (new URL(window.location.href).searchParams.get("demo")) {
+      this.loadDemo();
+    }
     this.state = {
       filename: filenames.length === 1 ? filenames[0] : null,
       filenames,
