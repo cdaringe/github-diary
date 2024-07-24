@@ -13,7 +13,7 @@ importers:
         version: 5.17.0
       '@testing-library/react':
         specifier: ^11.2.7
-        version: 11.2.7(react-dom@18.2.0)(react@18.2.0)
+        version: 11.2.7(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@testing-library/user-event':
         specifier: ^12.8.3
         version: 12.8.3(@testing-library/dom@9.3.3)
@@ -30,8 +30,8 @@ importers:
         specifier: ^4.14.116
         version: 4.14.201
       '@types/node':
-        specifier: ^12.20.37
-        version: 12.20.55
+        specifier: ^20.0.0
+        version: 20.14.10
       '@types/react':
         specifier: ^17.0.70
         version: 17.0.70
@@ -58,7 +58,7 @@ importers:
         version: 4.17.21
       next:
         specifier: 13.5.6
-        version: 13.5.6(react-dom@18.2.0)(react@18.2.0)
+        version: 13.5.6(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       npm-run-all:
         specifier: ^4.1.3
         version: 4.1.5
@@ -73,7 +73,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       react-json-tree:
         specifier: ^0.11.0
-        version: 0.11.2(react-dom@18.2.0)(react@18.2.0)
+        version: 0.11.2(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react-magic-dropzone:
         specifier: ^1.0.1
         version: 1.0.1
@@ -331,8 +331,8 @@ packages:
   '@types/lodash@4.14.201':
     resolution: {integrity: sha512-y9euML0cim1JrykNxADLfaG0FgD1g/yTHwUs/Jg9ZIU7WKj2/4IW9Lbb1WZbvck78W/lfGXFfe+u2EGfIJXdLQ==}
 
-  '@types/node@12.20.55':
-    resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
+  '@types/node@20.14.10':
+    resolution: {integrity: sha512-MdiXf+nDuMvY0gJKxyfZ7/6UFsETO7mGKF54MVD/ekJS6HdFtpZFBgrh6Pseu64XTb2MLyFPlbW6hj8HYRQNOQ==}
 
   '@types/prop-types@15.7.10':
     resolution: {integrity: sha512-mxSnDQxPqsZxmeShFH+uwQ4kO4gcJcGahjjMFeLbKE95IAZiiZyiEepGZjtXJ7hN/yfu0bu9xN2ajcU0JcxX6A==}
@@ -1810,6 +1810,9 @@ packages:
   unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
 
+  undici-types@5.26.5:
+    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
+
   union-value@1.0.1:
     resolution: {integrity: sha512-tJfXmxMeWYnczCVs7XAEvIV7ieppALdyepWMkHkwciRpZraG/xwT+s2JN8+pr1+8jCRf80FFzvr+MpQeeoF4Xg==}
     engines: {node: '>=0.10.0'}
@@ -1887,7 +1890,7 @@ snapshots:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.6
       '@types/istanbul-reports': 3.0.4
-      '@types/node': 12.20.55
+      '@types/node': 20.14.10
       '@types/yargs': 15.0.18
       chalk: 4.1.2
 
@@ -1923,6 +1926,7 @@ snapshots:
   '@samverschueren/stream-to-observable@0.3.1(rxjs@6.6.7)':
     dependencies:
       any-observable: 0.3.0(rxjs@6.6.7)
+    optionalDependencies:
       rxjs: 6.6.7
     transitivePeerDependencies:
       - zenObservable
@@ -1965,7 +1969,7 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
 
-  '@testing-library/react@11.2.7(react-dom@18.2.0)(react@18.2.0)':
+  '@testing-library/react@11.2.7(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.23.2
       '@testing-library/dom': 7.31.2
@@ -2124,7 +2128,9 @@ snapshots:
 
   '@types/lodash@4.14.201': {}
 
-  '@types/node@12.20.55': {}
+  '@types/node@20.14.10':
+    dependencies:
+      undici-types: 5.26.5
 
   '@types/prop-types@15.7.10': {}
 
@@ -2171,7 +2177,7 @@ snapshots:
   ansi-styles@5.2.0: {}
 
   any-observable@0.3.0(rxjs@6.6.7):
-    dependencies:
+    optionalDependencies:
       rxjs: 6.6.7
 
   argparse@1.0.10:
@@ -3267,7 +3273,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  next@13.5.6(react-dom@18.2.0)(react@18.2.0):
+  next@13.5.6(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@next/env': 13.5.6
       '@swc/helpers': 0.5.2
@@ -3478,7 +3484,7 @@ snapshots:
 
   react-is@17.0.2: {}
 
-  react-json-tree@0.11.2(react-dom@18.2.0)(react@18.2.0):
+  react-json-tree@0.11.2(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       babel-runtime: 6.26.0
       prop-types: 15.8.1
@@ -3823,6 +3829,8 @@ snapshots:
       has-bigints: 1.0.2
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
+
+  undici-types@5.26.5: {}
 
   union-value@1.0.1:
     dependencies:
